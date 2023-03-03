@@ -84,7 +84,6 @@ module.exports = class ItemController {
       });
       invalidateCache(itemCache.items);
       res.status(200).json(data);
-      res.status(200).json(data);
     } catch (err) {
       const { status, data } = err.response;
       res.status(status).json(data);
