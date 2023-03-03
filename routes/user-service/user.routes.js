@@ -1,6 +1,6 @@
-const upload = require('../config/multer');
+const upload = require('../../config/multer');
 
-const UserController = require('../controllers/userController');
+const UserController = require('../../controllers/user-service/userController');
 
 const router = require('express').Router();
 
