@@ -47,4 +47,30 @@ module.exports = class ItemController {
       res.status(status).json(data);
     }
   }
+
+  static async deleteItem(req, res) {
+    try {
+      const { id } = req.params;
+      const { data } = await axios.delete(`${itemAPI}/${id}`);
+      res.status(200).json(data);
+    } catch (err) {
+      const { status, data } = err.response;
+      res.status(status).json(data);
+    }
+  }
+
+  static async updateItem(req, res) {
+    try {
+      const { UserId, amountBid } = req.body;
+      const { id } = req.params;
+      const { data } = await axios.put(`${itemAPI}/${id}`, {
+        UserId,
+        amountBid,
+      });
+      res.status(200).json(data);
+    } catch (err) {
+      const { status, data } = err.response;
+      res.status(status).json(data);
+    }
+  }
 };
