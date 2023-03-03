@@ -29,4 +29,17 @@ module.exports = class CategoryController {
       res.status(status).json(data);
     }
   }
+
+  static async deleteSubCategory(req, res) {
+    try {
+      const { id } = req.params;
+      const { data } = await axios.delete(`${categoryAPI}/subcategory/${id}`, {
+        id,
+      });
+      res.status(200).json(data);
+    } catch (err) {
+      const { status, data } = err.response;
+      res.status(status).json(data);
+    }
+  }
 };
