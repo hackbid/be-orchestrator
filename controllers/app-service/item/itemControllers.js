@@ -8,7 +8,7 @@ const itemCache = {
 };
 
 module.exports = class ItemController {
-  static async findAll(req, res) {
+  static async findAll(req, res, next) {
     try {
       const cachedData = await redis.get(itemCache.items);
       if (cachedData) {
@@ -19,12 +19,11 @@ module.exports = class ItemController {
         res.status(200).json(data);
       }
     } catch (err) {
-      const { status, data } = err.response;
-      res.status(status).json(data);
+      next(err);
     }
   }
 
-  static async createItem(req, res) {
+  static async createItem(req, res, next) {
     try {
       const {
         name,
@@ -56,12 +55,11 @@ module.exports = class ItemController {
       invalidateCache(itemCache.items);
       res.status(200).json(data);
     } catch (err) {
-      const { status, data } = err.response;
-      res.status(status).json(data);
+      next(err);
     }
   }
 
-  static async deleteItem(req, res) {
+  static async deleteItem(req, res, next) {
     try {
       const { id } = req.params;
       const { data } = await axios.delete(`${itemAPI}/${id}`);
@@ -69,12 +67,11 @@ module.exports = class ItemController {
       res.status(200).json(data);
       res.status(200).json(data);
     } catch (err) {
-      const { status, data } = err.response;
-      res.status(status).json(data);
+      next(err);
     }
   }
 
-  static async updateItem(req, res) {
+  static async updateItem(req, res, next) {
     try {
       const { UserId, amountBid } = req.body;
       const { id } = req.params;
@@ -85,8 +82,7 @@ module.exports = class ItemController {
       invalidateCache(itemCache.items);
       res.status(200).json(data);
     } catch (err) {
-      const { status, data } = err.response;
-      res.status(status).json(data);
+      next(err);
     }
   }
 };
