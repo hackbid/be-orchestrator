@@ -2,27 +2,25 @@ const axios = require("axios");
 const cityAPI = process.env.cityAPI || "http://localhost:4005";
 
 module.exports = class CityController {
-  static async findAllProvince(req, res) {
+  static async findAllProvince(req, res, next) {
     try {
       const { data } = await axios.get(cityAPI + "/province");
       res.status(200).json(data);
     } catch (err) {
-      const { status, data } = err.response;
-      res.status(status).json(data);
+      next(err);
     }
   }
 
-  static async findAllCities(req, res) {
+  static async findAllCities(req, res, next) {
     try {
       const { data } = await axios.get(cityAPI + "/city");
       res.status(200).json(data);
     } catch (err) {
-      const { status, data } = err.response;
-      res.status(status).json(data);
+      next(err);
     }
   }
 
-  static async findCost(req, res) {
+  static async findCost(req, res, next) {
     try {
       const { origin, destination, weight, courier } = req.body;
       const { data } = await axios.post(cityAPI + "/cost", {
@@ -33,8 +31,7 @@ module.exports = class CityController {
       });
       res.status(200).json(data);
     } catch (err) {
-      const { status, data } = err.response;
-      res.status(status).json(data);
+      next(err);
     }
   }
 };

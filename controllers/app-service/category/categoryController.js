@@ -12,7 +12,7 @@ const categoriesCache = {
 };
 
 module.exports = class CategoryController {
-  static async findAll(req, res) {
+  static async findAll(req, res, next) {
     try {
       const cachedData = await redis.get(categoriesCache.categories);
       if (cachedData) {
@@ -23,12 +23,11 @@ module.exports = class CategoryController {
         res.status(200).json(data);
       }
     } catch (err) {
-      const { status, data } = err.response;
-      res.status(status).json(data);
+      next(err);
     }
   }
 
-  static async createSubCategory(req, res) {
+  static async createSubCategory(req, res, next) {
     try {
       const { id } = req.params;
       const { name, imageUrl } = req.body;
@@ -43,12 +42,11 @@ module.exports = class CategoryController {
       );
       res.status(200).json(data);
     } catch (err) {
-      const { status, data } = err.response;
-      res.status(status).json(data);
+      next(err);
     }
   }
 
-  static async deleteSubCategory(req, res) {
+  static async deleteSubCategory(req, res, next) {
     try {
       const { id } = req.params;
       const { data } = await axios.delete(`${categoryAPI}/subcategory/${id}`, {
@@ -60,8 +58,7 @@ module.exports = class CategoryController {
       );
       res.status(200).json(data);
     } catch (err) {
-      const { status, data } = err.response;
-      res.status(status).json(data);
+      next(err);
     }
   }
 };
