@@ -6,10 +6,7 @@ const { invalidateCache } = require("../../../helper/invalidate.redis");
 const categoryAPI =
   process.env.CATEGORY_API || "http://localhost:4002/categories";
 
-const categoriesCache = {
-  categories: "categories/all",
-  subCategories: "categories/subcategories",
-};
+const { categoriesCache } = require("../../../cache/cache");
 
 module.exports = class CategoryController {
   static async findAll(req, res, next) {

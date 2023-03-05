@@ -1,8 +1,10 @@
 "use strict";
 const userApi = process.env.USER_API;
+const cityAPI = process.env.CITY_API;
 const { Upload } = require("@aws-sdk/lib-storage");
 const { default: axios } = require("axios");
 const { s3 } = require("../../config/S3");
+const { formatDate } = require("../../utils/date.formatter");
 
 module.exports = class UserController {
   static async findAll(req, res, next) {
@@ -18,7 +20,15 @@ module.exports = class UserController {
     try {
       const { id } = req.params;
       const { data } = await axios.get(userApi + "/users/" + id);
-      res.status(200).json(data);
+
+      const { data: cityData } = await axios.get(cityAPI + "/city");
+      const userCityId = data.city_id.toString();
+      const city = cityData.filter((data) => data.city_id === userCityId);
+
+      data.createdAt = formatDate(data.createdAt);
+      data.city = city[0].city_name;
+      data.province = city[0].province;
+      res.status(200).json({ data });
     } catch (err) {
       next(err);
     }
@@ -62,6 +72,7 @@ module.exports = class UserController {
       next(err);
     }
   }
+
   static async addBalance(req, res, next) {
     try {
       const { userId } = req.params;
@@ -74,6 +85,7 @@ module.exports = class UserController {
       next(error);
     }
   }
+
   static async reduceBalance(req, res, next) {
     try {
       const { userId } = req.params;
@@ -86,6 +98,7 @@ module.exports = class UserController {
       next(error);
     }
   }
+
   static async getHistories(req, res, next) {
     try {
       const { userId } = req.params;
@@ -97,6 +110,7 @@ module.exports = class UserController {
       next(error);
     }
   }
+
   static async payment(req, res, next) {
     try {
       const { userId } = req.params;
