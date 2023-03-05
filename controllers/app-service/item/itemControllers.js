@@ -59,6 +59,17 @@ module.exports = class ItemController {
     }
   }
 
+  static async getItemById(req, res, next) {
+    try {
+      const { id } = req.params;
+      console.log("masuk");
+      const { data } = await axios(`${itemAPI}/${id}`);
+      res.status(200).json(data);
+    } catch (err) {
+      next(err);
+    }
+  }
+
   static async deleteItem(req, res, next) {
     try {
       const { id } = req.params;
