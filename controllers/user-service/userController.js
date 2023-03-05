@@ -43,7 +43,7 @@ module.exports = class UserController {
       );
       const { id, username } = newUserData.dataValues;
       const params = {
-        Bucket: "hackbid-asset",
+        Bucket: "hackbid",
         Key: Math.floor(Math.random() * 1000) + "_" + `${username}_profile`,
         Body: buffer,
       };
