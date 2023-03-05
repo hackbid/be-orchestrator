@@ -32,7 +32,6 @@ module.exports = class CategoryController {
       const { id } = req.params;
       const { name, imageUrl } = req.body;
       const { data } = await axios.post(`${categoryAPI}/${id}`, {
-        id,
         name,
         imageUrl,
       });
@@ -40,6 +39,16 @@ module.exports = class CategoryController {
         categoriesCache.categories,
         categoriesCache.subCategories
       );
+      res.status(200).json(data);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async getSubCategory(req, res, next) {
+    try {
+      const { id } = req.params;
+      const { data } = await axios(`${categoryAPI}/${id}`);
       res.status(200).json(data);
     } catch (err) {
       next(err);
