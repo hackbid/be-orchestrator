@@ -15,5 +15,6 @@ router.post(
 router.patch("/addbalance/:userId", UserController.addBalance);
 router.patch("/reducebalance/:userId", UserController.reduceBalance);
 router.get("/histories/:userId", UserController.getHistories);
+router.post("/payment/:userId", UserController.payment);
 
 module.exports = router;
