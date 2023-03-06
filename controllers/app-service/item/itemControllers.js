@@ -6,6 +6,7 @@ const { invalidateCache } = require("../../../helper/invalidate.redis");
 const itemAPI = process.env.ITEM_API;
 const mongoAPI = process.env.MONGO_API;
 const userAPI = process.env.USER_API;
+const categoryAPI = process.env.CATEGORY_API;
 const itemCache = {
   items: "items/all",
 };
@@ -29,7 +30,6 @@ module.exports = class ItemController {
     try {
       const { data: itemToday } = await axios.get(`${itemAPI}/today`);
       const temp = itemToday.map(async (e) => {
-        console.log(e);
         const { data: imagesData } = await axios.get(
           mongoAPI + `/itemImages/${e.imageMongoId}`
         );
@@ -113,7 +113,7 @@ module.exports = class ItemController {
       itemId.images = imagesData ? imagesData.images : [];
       itemId.chats = historyData ? historyData.chatHistories : [];
       itemId.bids = historyData ? historyData.bidHistories : [];
-      itemId.user = UserId ? UserId : "";
+      itemId.seller = UserId ? UserId : "";
       res.status(200).json(itemId);
     } catch (err) {
       next(err);
@@ -143,6 +143,64 @@ module.exports = class ItemController {
       res.status(200).json(data);
     } catch (err) {
       next(err);
+    }
+  }
+  static async getReporting(req, res, next) {
+    const { data: report } = await axios
+      .get(mongoAPI + "/reporting")
+      .catch(next);
+    res.json(report);
+  }
+  static async postReporting(req, res, next) {
+    try {
+      const { UserId, username, itemId, itemName, reason } = req.body;
+      const { data: postReporting } = await axios.post(
+        mongoAPI + "/reporting",
+        {
+          UserId,
+          username,
+          itemId,
+          itemName,
+          reason,
+        }
+      );
+      res.status(201).json(postReporting);
+    } catch (error) {
+      next(error);
+    }
+  }
+  static async postChat(req, res, next) {
+    try {
+      const { id } = req.params;
+      const { username, chatValue, isSeller } = req.body;
+      const { data: upPost } = await axios.post(
+        mongoAPI + `/itemHistory/${id}/chat`,
+        {
+          username,
+          chatValue,
+          isSeller,
+        }
+      );
+      res.status(201).json(upPost);
+    } catch (error) {
+      next(error);
+    }
+  }
+  static async postBid(req, res, next) {
+    const { UserId, username, bidValue } = req.body;
+    const { id } = req.params;
+    try {
+      const { data: dataBid } = await axios.post(
+        mongoAPI + `/itemHistory/${id}/bid`,
+        {
+          UserId,
+          username,
+          bidValue,
+        }
+      );
+      res.status(201).json(dataBid);
+    } catch (error) {
+      next(error);
     }
   }
 };
