@@ -5,7 +5,7 @@ const { s3 } = require("../../../config/S3");
 const { invalidateCache } = require("../../../helper/invalidate.redis");
 const itemAPI = process.env.ITEM_API;
 const mongoAPI = process.env.MONGO_API;
-
+const userAPI = process.env.USER_API;
 const itemCache = {
   items: "items/all",
 };
@@ -107,11 +107,13 @@ module.exports = class ItemController {
       const { data: historyData } = await axios.get(
         mongoAPI + `/itemHistory/${itemId.imageMongoId}`
       );
-
+      const { data: UserId } = await axios.get(
+        userAPI + `/users/${itemId.UserId}`
+      );
       itemId.images = imagesData ? imagesData.images : [];
       itemId.chats = historyData ? historyData.chatHistories : [];
       itemId.bids = historyData ? historyData.bidHistories : [];
-
+      itemId.user = UserId ? UserId : "";
       res.status(200).json(itemId);
     } catch (err) {
       next(err);
