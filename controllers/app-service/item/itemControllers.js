@@ -27,8 +27,17 @@ module.exports = class ItemController {
   }
   static async findItemToday(req, res, next) {
     try {
-      const { data } = await axios.get(`${itemAPI}/today`);
-      res.status(200).json(data);
+      const { data: itemToday } = await axios.get(`${itemAPI}/today`);
+      const temp = itemToday.map(async (e) => {
+        console.log(e);
+        const { data: imagesData } = await axios.get(
+          mongoAPI + `/itemImages/${e.imageMongoId}`
+        );
+        e.images = imagesData ? imagesData.images : [];
+        return e;
+      });
+      const result = await Promise.all(temp);
+      res.status(200).json(result);
     } catch (err) {
       next(err);
     }
@@ -91,8 +100,19 @@ module.exports = class ItemController {
   static async getItemById(req, res, next) {
     try {
       const { id } = req.params;
-      const { data } = await axios(`${itemAPI}/${id}`);
-      res.status(200).json(data);
+      const { data: itemId } = await axios(`${itemAPI}/${id}`);
+      const { data: imagesData } = await axios.get(
+        mongoAPI + `/itemImages/${itemId.imageMongoId}`
+      );
+      const { data: historyData } = await axios.get(
+        mongoAPI + `/itemHistory/${itemId.imageMongoId}`
+      );
+
+      itemId.images = imagesData ? imagesData.images : [];
+      itemId.chats = historyData ? historyData.chatHistories : [];
+      itemId.bids = historyData ? historyData.bidHistories : [];
+
+      res.status(200).json(itemId);
     } catch (err) {
       next(err);
     }
