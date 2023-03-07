@@ -151,10 +151,18 @@ module.exports = class ItemController {
     }
   }
   static async getReporting(req, res, next) {
-    const { data: report } = await axios
-      .get(mongoAPI + "/reporting")
-      .catch(next);
-    res.json(report);
+    try {
+      const { data: report } = await axios.get(mongoAPI + "/reporting");
+      let temp = report.map(async (e) => {
+        const { data: itemData } = await axios.get(itemAPI + `/${e.itemId}`);
+        e.item = itemData ? itemData : {};
+        return e;
+      });
+      let result = await Promise.all(temp);
+      res.status(200).json(result);
+    } catch (error) {
+      next(error);
+    }
   }
   static async postReporting(req, res, next) {
     try {
