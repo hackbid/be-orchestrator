@@ -105,7 +105,7 @@ module.exports = class ItemController {
         mongoAPI + `/itemImages/${itemId.imageMongoId}`
       );
       const { data: historyData } = await axios.get(
-        mongoAPI + `/itemHistory/${itemId.imageMongoId}`
+        mongoAPI + `/itemHistory/${itemId.historyMongoId}`
       );
       const { data: UserId } = await axios.get(
         userAPI + `/users/${itemId.UserId}`
