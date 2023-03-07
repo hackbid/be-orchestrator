@@ -110,11 +110,8 @@ module.exports = class ItemController {
       const { data: UserId } = await axios.get(
         userAPI + `/users/${itemId.UserId}`
       );
-      console.log(itemId)
-      const { data: winnerId } = await axios.get(
-        userAPI + `/users/${itemId.UserId}`
-      );
-      console.log(winnerId)
+      let user = itemId.Winner.UserId;
+      const { data: winnerId } = await axios.get(userAPI + `/users/${user}`);
       itemId.Winner.username = winnerId.username;
       itemId.images = imagesData ? imagesData.images : [];
       itemId.chats = historyData ? historyData.chatHistories : [];
@@ -122,6 +119,7 @@ module.exports = class ItemController {
       itemId.seller = UserId ? UserId : "";
       res.status(200).json(itemId);
     } catch (err) {
+      console.log(err);
       next(err);
     }
   }
