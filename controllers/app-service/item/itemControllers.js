@@ -174,6 +174,20 @@ module.exports = class ItemController {
       next(error);
     }
   }
+  static async deleteReporting(req, res, next) {
+    const { id } = req.params;
+    try {
+      const { data: findId } = await axios.get(mongoAPI + `/reporting/${id}`);
+      const { data: deleteReport } = await axios.delete(
+        mongoAPI + `/reporting/${id}`
+      );
+      let itemId = findId.itemId;
+      await axios.delete(itemAPI + `/${itemId}`);
+      res.status(200).json(deleteReport);
+    } catch (error) {
+      next(error);
+    }
+  }
   static async postChat(req, res, next) {
     try {
       const { id } = req.params;
