@@ -110,6 +110,10 @@ module.exports = class ItemController {
       const { data: UserId } = await axios.get(
         userAPI + `/users/${itemId.UserId}`
       );
+      const { data: winnerId } = await axios.get(
+        userAPI + `/users/${itemId.Winner.UserId}`
+      );
+      itemId.Winner.username = winnerId.username;
       itemId.images = imagesData ? imagesData.images : [];
       itemId.chats = historyData ? historyData.chatHistories : [];
       itemId.bids = historyData ? historyData.bidHistories : [];
