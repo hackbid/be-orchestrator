@@ -110,4 +110,47 @@ module.exports = class UserController {
       next(error);
     }
   }
+  static async getWithdraw(req, res, next) {
+    try {
+      const { data: dataWithdraw } = await axios.get(userApi + "/reportwd");
+      res.status(200).json(dataWithdraw);
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  }
+  static async requestWD(req, res, next) {
+    const { id } = req.params;
+    const { balance } = req.body;
+    try {
+      const { data: reportWd } = await axios.post(userApi + `/reportwd/${id}`, {
+        balance,
+      });
+      res.status(200).json(reportWd);
+    } catch (error) {
+      next(error);
+    }
+  }
+  static async approvalWD(req, res, next) {
+    try {
+      const { id } = req.params;
+      const { data: resApproval } = await axios.patch(
+        userApi + `/approve/${id}`
+      );
+      res.status(200).json(resApproval);
+    } catch (error) {
+      next(error);
+    }
+  }
+  static async rejectWD(req, res, next) {
+    const { id } = req.params;
+    try {
+      const { data: resReject } = await axios.patch(
+        userApi + `/reportwd/${id}`
+      );
+      res.status(200).json(resReject);
+    } catch (error) {
+      next(error);
+    }
+  }
 };
