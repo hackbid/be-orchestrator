@@ -3,7 +3,7 @@ const axios = require("axios");
 const redis = require("../../../config/redis.config");
 const { s3 } = require("../../../config/S3");
 const { invalidateCache } = require("../../../helper/invalidate.redis");
-const itemAPI = process.env.itemAPI;
+const itemAPI = process.env.ITEM_API;
 const mongoAPI = process.env.MONGO_API;
 const userAPI = process.env.USER_API;
 const categoryAPI = process.env.CATEGORY_API;
@@ -99,6 +99,7 @@ module.exports = class ItemController {
 
   static async getItemById(req, res, next) {
     try {
+      ``;
       const { id } = req.params;
       const { data: itemId } = await axios(`${itemAPI}/${id}`);
       const { data: imagesData } = await axios.get(
@@ -110,6 +111,7 @@ module.exports = class ItemController {
       const { data: UserId } = await axios.get(
         userAPI + `/users/${itemId.UserId}`
       );
+
       let user = itemId.Winner.UserId;
       const { data: winnerId } = await axios.get(userAPI + `/users/${user}`);
       itemId.Winner.username = winnerId.username;
@@ -128,7 +130,6 @@ module.exports = class ItemController {
       const { id } = req.params;
       const { data } = await axios.delete(`${itemAPI}/${id}`);
       invalidateCache(itemCache.items);
-      res.status(200).json(data);
       res.status(200).json(data);
     } catch (err) {
       next(err);
