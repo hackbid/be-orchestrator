@@ -203,4 +203,15 @@ module.exports = class ItemController {
       next(error);
     }
   }
+  static async itemHistory(req, res, next) {
+    try {
+      const { id } = req.params;
+      const { data: historyItems } = await axios.get(
+        mongoAPI + `/itemHistory/${id}`
+      );
+      res.status(200).json(historyItems);
+    } catch (error) {
+      next(error);
+    }
+  }
 };

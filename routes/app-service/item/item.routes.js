@@ -10,6 +10,7 @@ router.get("/report", itemController.getReporting);
 router.post("/report", itemController.postReporting);
 router.post("/chat/:id", itemController.postChat);
 router.post("/bid/:id", ItemController.postBid);
+router.get("/itemHistory/:id", ItemController.itemHistory);
 router.post("/", upload.array("images"), itemController.createItem);
 router.delete("/:id", itemController.deleteItem);
 router.get("/:id", itemController.getItemById);
