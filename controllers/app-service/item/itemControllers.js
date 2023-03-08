@@ -6,6 +6,7 @@ const { invalidateCache } = require("../../../helper/invalidate.redis");
 const itemAPI = process.env.ITEM_API;
 const mongoAPI = process.env.MONGO_API;
 const userAPI = process.env.USER_API;
+const cityAPI = process.env.CITY_API;
 const categoryAPI = process.env.CATEGORY_API;
 const itemCache = {
   items: "items/all",
@@ -268,12 +269,31 @@ module.exports = class ItemController {
       const { data: myWinner } = await axios.get(
         itemAPI + `/youwinner/${userId}`
       );
-      console.log(myWinner);
       const temp = myWinner.map(async (e) => {
         const { data: imagesData } = await axios.get(
           mongoAPI + `/itemImages/${e.Item.imageMongoId}`
         );
+        const { data: userData } = await axios.get(
+          userAPI + `/users/${e.Item.UserId}`
+        );
+        const { data: custData } = await axios.get(
+          userAPI + `/users/${e.UserId}`
+        );
+        e.origin = {};
+        e.destination = {};
         e.images = imagesData ? imagesData.images : [];
+        e.destination.winner = custData ? custData.fullName : "";
+        e.destination.city_id = custData ? custData.city_id : "";
+        e.origin.seller = userData ? userData.fullName : "";
+        e.origin.city_id = userData ? userData.city_id : "";
+        e.origin.weight = e.Item.weight;
+        const { data: Cost } = await axios.post(cityAPI + "/cost", {
+          origin: e.origin.city_id,
+          destination: e.destination.city_id,
+          weight: e.origin.weight,
+          courier: "jne",
+        });
+        e.cost = Cost[0].costs[0].cost[0].value;
         return e;
       });
       const result = await Promise.all(temp);
