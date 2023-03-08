@@ -307,4 +307,21 @@ module.exports = class ItemController {
       next(error);
     }
   }
+  static async checkOut(req, res, next) {
+    try {
+      const { SellerId, ItemId, BuyerId, summary } = req.body;
+      const { data: dataUser } = await axios.get(userAPI + `/users/${BuyerId}`);
+      if (dataUser.balance < summary) throw { name: "notSaldo" };
+      await axios.patch(userAPI + `/reducebalance/${BuyerId}`, {
+        balance: summary,
+      });
+      await axios.patch(userAPI + `/addbalance/${SellerId}`, {
+        balance: summary,
+      });
+      await axios.patch(itemAPI + `/soldout/${ItemId}`);
+      res.status(200).json({ message: "recieved" });
+    } catch (error) {
+      next(error);
+    }
+  }
 };

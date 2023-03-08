@@ -18,5 +18,6 @@ router.post("/", upload.array("images"), itemController.createItem);
 router.delete("/:id", itemController.deleteItem);
 router.get("/:id", itemController.getItemById);
 router.put("/:id", itemController.updateItem);
+router.post("/checkout", ItemController.checkOut);
 
 module.exports = router;
