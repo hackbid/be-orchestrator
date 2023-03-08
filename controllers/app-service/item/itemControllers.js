@@ -6,6 +6,7 @@ const { invalidateCache } = require("../../../helper/invalidate.redis");
 const itemAPI = process.env.ITEM_API;
 const mongoAPI = process.env.MONGO_API;
 const userAPI = process.env.USER_API;
+const cityAPI = process.env.CITY_API;
 const categoryAPI = process.env.CATEGORY_API;
 const itemCache = {
   items: "items/all",
@@ -268,15 +269,39 @@ module.exports = class ItemController {
       const { data: myWinner } = await axios.get(
         itemAPI + `/youwinner/${userId}`
       );
-      console.log(myWinner);
-      const temp = myWinner.map(async (e) => {
-        const { data: imagesData } = await axios.get(
-          mongoAPI + `/itemImages/${e.Item.imageMongoId}`
-        );
-        e.images = imagesData ? imagesData.images : [];
-        return e;
-      });
-      const result = await Promise.all(temp);
+      const result = await Promise.all(
+        myWinner.map(async (e) => {
+          const { data: imagesData } = await axios.get(
+            mongoAPI + `/itemImages/${e.Item.imageMongoId}`
+          );
+          const { data: userData } = await axios.get(
+            userAPI + `/users/${e.Item.UserId}`
+          );
+          const { data: custData } = await axios.get(
+            userAPI + `/users/${e.UserId}`
+          );
+          const { data: Cost } = await axios.post(cityAPI + "/cost", {
+            origin: userData.city_id,
+            destination: custData.city_id,
+            weight: e.Item.weight,
+            courier: "jne",
+          });
+          return {
+            ...e,
+            origin: {
+              seller: userData.fullName,
+              city_id: userData.city_id,
+              weight: e.Item.weight,
+            },
+            destination: {
+              winner: custData.fullName,
+              city_id: custData.city_id,
+            },
+            images: imagesData ? imagesData.images : [],
+            cost: Cost[0].costs[0].cost[0].value,
+          };
+        })
+      );
       res.status(200).json(result);
     } catch (error) {
       next(error);
