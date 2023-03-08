@@ -153,24 +153,17 @@ module.exports = class ItemController {
   static async getReporting(req, res, next) {
     try {
       const { data: report } = await axios.get(mongoAPI + "/reporting");
-
-      let temp = report.map(async (e) => {
-        console.log(itemAPI);
-        const { data: itemData } = await axios.get(
-          itemAPI + `/reporting/${e.itemId}`
-        );
-
+      const temp = report.map(async (e) => {
+        const { data: itemData } = await axios.get(itemAPI + `/${e.itemId}`);
         const { data: imageData } = await axios.get(
           mongoAPI + `/itemImages/${itemData.imageMongoId}`
         );
-        e.image = imageData ? imageData.images : [];
         e.item = itemData ? itemData : {};
+        e.image = imageData ? imageData.images : [];
         return e;
       });
 
-      let result = await Promise.all(temp);
-
-      res.status(200).json(result);
+      res.status(200).json(await Promise.all(temp));
     } catch (error) {
       next(error);
     }
