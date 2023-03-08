@@ -319,6 +319,7 @@ module.exports = class ItemController {
         balance: summary,
       });
       await axios.patch(itemAPI + `/soldout/${ItemId}`);
+      invalidateCache(itemCache.items, "categories/all");
       res.status(200).json({ message: "recieved" });
     } catch (error) {
       next(error);
