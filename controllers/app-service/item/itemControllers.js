@@ -164,6 +164,7 @@ module.exports = class ItemController {
 
       res.status(200).json(await Promise.all(temp));
     } catch (error) {
+      console.log(error);
       next(error);
     }
   }
