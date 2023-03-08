@@ -113,7 +113,16 @@ module.exports = class UserController {
   static async getWithdraw(req, res, next) {
     try {
       const { data: dataWithdraw } = await axios.get(userApi + "/reportwd");
-      res.status(200).json(dataWithdraw);
+      let temp = dataWithdraw.map(async (e) => {
+        const { data: dataUser } = await axios.get(
+          userApi + `/users/${e.UserId}`
+        );
+        e.user = dataUser ? dataUser.username : "";
+        return e;
+      });
+
+      let result = await Promise.all(temp);
+      res.status(200).json(result);
     } catch (error) {
       console.log(error);
       next(error);
