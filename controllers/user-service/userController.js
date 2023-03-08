@@ -1,5 +1,6 @@
 "use strict";
 const userApi = process.env.USER_API;
+const emailApi = process.env.EMAIL_API;
 const { Upload } = require("@aws-sdk/lib-storage");
 const { default: axios } = require("axios");
 const { s3 } = require("../../config/S3");
@@ -13,7 +14,6 @@ module.exports = class UserController {
       next(err);
     }
   }
-
   static async findById(req, res, next) {
     try {
       const { id } = req.params;
@@ -23,7 +23,6 @@ module.exports = class UserController {
       next(err);
     }
   }
-
   static async login(req, res, next) {
     try {
       const { data } = await axios.post(userApi + "/login", req.body);
@@ -32,7 +31,6 @@ module.exports = class UserController {
       next(err);
     }
   }
-
   static async register(req, res, next) {
     try {
       const { buffer } = req.file;
@@ -61,7 +59,6 @@ module.exports = class UserController {
       next(err);
     }
   }
-
   static async addBalance(req, res, next) {
     try {
       const { userId } = req.params;
@@ -135,6 +132,12 @@ module.exports = class UserController {
       const { data: reportWd } = await axios.post(userApi + `/reportwd/${id}`, {
         balance,
       });
+      const { data: userData } = await axios.get(userApi + `/users/${id}`);
+      await axios.post(emailApi + "/topup", {
+        mailto: userData.email,
+        user: userData.fullName,
+        balance: balance,
+      });
       res.status(200).json(reportWd);
     } catch (error) {
       next(error);
@@ -146,6 +149,7 @@ module.exports = class UserController {
       const { data: resApproval } = await axios.patch(
         userApi + `/approve/${id}`
       );
+
       res.status(200).json(resApproval);
     } catch (error) {
       next(error);
@@ -157,6 +161,11 @@ module.exports = class UserController {
       const { data: resReject } = await axios.patch(
         userApi + `/reportwd/${id}`
       );
+      const { data: userData } = await axios.get(userApi + `/users/${id}`);
+      await axios.post(emailApi + "/rejected", {
+        mailto: userData.email,
+        user: userData.fullName,
+      });
       res.status(200).json(resReject);
     } catch (error) {
       next(error);
