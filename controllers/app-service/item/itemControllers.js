@@ -135,7 +135,6 @@ module.exports = class ItemController {
       next(err);
     }
   }
-
   static async updateItem(req, res, next) {
     try {
       const { UserId, amountBid } = req.body;
@@ -201,6 +200,7 @@ module.exports = class ItemController {
       next(error);
     }
   }
+
   static async postChat(req, res, next) {
     try {
       const { id } = req.params;
