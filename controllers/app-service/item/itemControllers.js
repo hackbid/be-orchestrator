@@ -195,6 +195,7 @@ module.exports = class ItemController {
       );
       let itemId = findId.itemId;
       await axios.delete(itemAPI + `/${itemId}`);
+      invalidateCache(itemCache.items);
       res.status(200).json(deleteReport);
     } catch (error) {
       next(error);
