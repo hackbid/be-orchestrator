@@ -171,6 +171,10 @@ module.exports = class ItemController {
   static async postReporting(req, res, next) {
     try {
       const { UserId, username, itemId, itemName, reason } = req.body;
+      const { data: checkItem } = await axios.get(
+        mongoAPI + `/reporting/find/${itemId}`
+      );
+      if (checkItem.message == "already reported") throw Error;
       const { data: postReporting } = await axios.post(
         mongoAPI + "/reporting",
         {
@@ -254,6 +258,26 @@ module.exports = class ItemController {
         itemAPI + `/auction/${userId}`
       );
       res.status(200).json(dataAuction);
+    } catch (error) {
+      next(error);
+    }
+  }
+  static async myWinner(req, res, next) {
+    try {
+      const { userId } = req.params;
+      const { data: myWinner } = await axios.get(
+        itemAPI + `/youwinner/${userId}`
+      );
+      console.log(myWinner);
+      const temp = myWinner.map(async (e) => {
+        const { data: imagesData } = await axios.get(
+          mongoAPI + `/itemImages/${e.Item.imageMongoId}`
+        );
+        e.images = imagesData ? imagesData.images : [];
+        return e;
+      });
+      const result = await Promise.all(temp);
+      res.status(200).json(result);
     } catch (error) {
       next(error);
     }
