@@ -140,7 +140,6 @@ module.exports = class ItemController {
         }
     }
 
-  }
   static async getReporting(req, res, next) {
     try {
       const { data: report } = await axios.get(mongoAPI + "/reporting");
@@ -156,6 +155,7 @@ module.exports = class ItemController {
 
       res.status(200).json(await Promise.all(temp));
     } catch (error) {
+      console.log(error);
       next(error);
     }
   }
@@ -188,6 +188,7 @@ module.exports = class ItemController {
       next(error);
     }
   }
+
   static async postChat(req, res, next) {
     try {
       const { id } = req.params;
