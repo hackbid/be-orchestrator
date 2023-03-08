@@ -12,6 +12,7 @@ router.delete("/report/:id", itemController.deleteReporting);
 router.post("/chat/:id", itemController.postChat);
 router.post("/bid/:id", ItemController.postBid);
 router.get("/itemHistory/:id", ItemController.itemHistory);
+router.get("/myauction/:userId", ItemController.myAuction);
 router.post("/", upload.array("images"), itemController.createItem);
 router.delete("/:id", itemController.deleteItem);
 router.get("/:id", itemController.getItemById);

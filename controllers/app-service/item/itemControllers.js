@@ -153,8 +153,13 @@ module.exports = class ItemController {
   static async getReporting(req, res, next) {
     try {
       const { data: report } = await axios.get(mongoAPI + "/reporting");
+
       let temp = report.map(async (e) => {
-        const { data: itemData } = await axios.get(itemAPI + `/${e.itemId}`);
+        console.log(itemAPI);
+        const { data: itemData } = await axios.get(
+          itemAPI + `/reporting/${e.itemId}`
+        );
+
         const { data: imageData } = await axios.get(
           mongoAPI + `/itemImages/${itemData.imageMongoId}`
         );
@@ -162,6 +167,7 @@ module.exports = class ItemController {
         e.item = itemData ? itemData : {};
         return e;
       });
+
       let result = await Promise.all(temp);
 
       res.status(200).json(result);
@@ -242,6 +248,17 @@ module.exports = class ItemController {
         mongoAPI + `/itemHistory/${id}`
       );
       res.status(200).json(historyItems);
+    } catch (error) {
+      next(error);
+    }
+  }
+  static async myAuction(req, res, next) {
+    try {
+      const { userId } = req.params;
+      const { data: dataAuction } = await axios.get(
+        itemAPI + `/auction/${userId}`
+      );
+      res.status(200).json(dataAuction);
     } catch (error) {
       next(error);
     }
