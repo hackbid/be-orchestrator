@@ -109,6 +109,9 @@ module.exports = class ItemController {
       const { data: historyData } = await axios.get(
         mongoAPI + `/itemHistory/${itemId.historyMongoId}`
       );
+      const { data: SubCategoryId } = await axios.get(
+        categoryAPI + `/subcategory/${itemId.SubCategoryId}`
+      );
       const { data: UserId } = await axios.get(
         userAPI + `/users/${itemId.UserId}`
       );
@@ -116,6 +119,7 @@ module.exports = class ItemController {
       let user = itemId.Winner.UserId;
       const { data: winnerId } = await axios.get(userAPI + `/users/${user}`);
       itemId.Winner.username = winnerId.username;
+      itemId.category = SubCategoryId ? SubCategoryId : {};
       itemId.images = imagesData ? imagesData.images : [];
       itemId.chats = historyData ? historyData.chatHistories : [];
       itemId.bids = historyData ? historyData.bidHistories : [];
