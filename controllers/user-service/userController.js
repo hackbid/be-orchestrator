@@ -66,6 +66,12 @@ module.exports = class UserController {
       const { data } = await axios.patch(userApi + `/addbalance/${userId}`, {
         balance,
       });
+      const { data: userData } = await axios.get(userApi + `/users/${id}`);
+      await axios.post(emailApi + "/topup", {
+        mailto: userData.email,
+        user: userData.fullName,
+        balance: balance,
+      });
       res.status(200).json(data);
     } catch (error) {
       next(error);
@@ -133,7 +139,7 @@ module.exports = class UserController {
         balance,
       });
       const { data: userData } = await axios.get(userApi + `/users/${id}`);
-      await axios.post(emailApi + "/topup", {
+      await axios.post(emailApi + "/request", {
         mailto: userData.email,
         user: userData.fullName,
         balance: balance,
@@ -149,7 +155,6 @@ module.exports = class UserController {
       const { data: resApproval } = await axios.patch(
         userApi + `/approve/${id}`
       );
-
       res.status(200).json(resApproval);
     } catch (error) {
       next(error);
